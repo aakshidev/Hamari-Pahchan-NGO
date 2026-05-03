@@ -1,68 +1,1054 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GadgetShala - Digital India</title>
+
+<!-- syne + vollkorn - picked these from google fonts, liked how syne looked for headings -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Vollkorn:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
 <style>
-    body{
-        background: linear-gradient(to right, rgb(0, 0, 0), rgba(112, 45, 4, 0.838));
-        text-align: center;
-    }
-    .container{
-        display: flex;
-        gap: ;
-    }
-    .card{
-        text-align: center;
-    }
-    #home{background: linear-gradient(to right, rgb(0, 0, 0), rgba(112, 45, 4, 0.838));}
-    #about{background: linen;}
-    html{
-        scroll-behavior: smooth;
-    }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: #f4f3ef;
+  color: #1d1d1b;
+  min-height: 100vh;
+}
+
+/* tried flexbox first then switched to grid, grid worked better */
+.pageWrapper {
+  display: grid;
+  grid-template-columns: 208px 1fr;
+  min-height: 100vh;
+}
+
+/* =====================
+   SIDEBAR STYLES
+   ===================== */
+
+.sideNav {
+  background: #17213d;
+  padding: 22px 13px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.projectBrand {
+  margin-bottom: 26px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.09);
+}
+
+.projectBrand .internTag {
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #ff7733;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.projectBrand .projName {
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.projectBrand .orgName {
+  display: block;
+  color: rgba(255,255,255,0.35);
+  font-size: 10.5px;
+  margin-top: 4px;
+}
+
+/* nav items */
+.pagesLabel {
+  font-size: 8.5px;
+  color: rgba(255,255,255,0.22);
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  padding-left: 9px;
+  margin-bottom: 5px;
+}
+
+/* camelCase here because thats how i usually write JS-touched stuff */
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 9px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  color: rgba(255,255,255,0.48);
+  font-family: 'Syne', sans-serif;
+  font-size: 12.5px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  margin-bottom: 1px;
+}
+.navItem:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+.navItem.currentPage { background: rgba(255,107,0,0.15); color: #ff9966; }
+.navItem .navIcon { width: 17px; text-align: center; font-style: normal; }
+
+.navFooter {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 9.5px;
+  color: rgba(255,255,255,0.2);
+  line-height: 1.75;
+}
+
+/* =====================
+   MAIN CONTENT AREA
+   ===================== */
+
+.mainArea {
+  padding: 30px 26px;
+  max-width: 875px;
+}
+
+/* all pages hidden unless .activePage - toggled via JS */
+.dashPage {
+  display: none;
+}
+.dashPage.activePage {
+  display: block;
+  animation: pgIn 0.22s ease;
+}
+
+@keyframes pgIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ====================
+   COMMON/SHARED STUFF
+   ==================== */
+
+/* little orange label that appears above page titles */
+.pageTagline {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  background: #fff1e8;
+  color: #dd5500;
+  padding: 3px 9px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.pgHeading {
+  font-size: 21px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+
+.pgSubtext {
+  font-family: 'Vollkorn', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: #616060;
+  line-height: 1.65;
+  max-width: 510px;
+  margin-bottom: 22px;
+}
+
+.sepLine {
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+  margin: 22px 0;
+}
+
+/* ========================
+   HOME PAGE
+   ======================== */
+
+.heroSection {
+  background: #17213d;
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* decorative bg circles - purely visual */
+.heroSection::before {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,100,0,0.11);
+  top: -55px; right: -55px;
+  pointer-events: none;
+}
+
+.heroSection::after {
+  content: '';
+  position: absolute;
+  width: 105px; height: 105px;
+  border-radius: 50%;
+  background: rgba(20,128,10,0.09);
+  bottom: -30px; right: 85px;
+  pointer-events: none;
+}
+
+.heroProjLabel {
+  display: inline-block;
+  background: rgba(255,107,0,0.16);
+  color: #ff9955;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.heroSection h1 {
+  font-size: 31px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.18;
+  margin-bottom: 10px;
+}
+.heroSection h1 .highlight { color: #ff9955; }
+
+.heroSection .heroDesc {
+  font-family: 'Vollkorn', serif;
+  font-style: italic;
+  color: rgba(255,255,255,0.57);
+  font-size: 13.5px;
+  line-height: 1.7;
+  max-width: 410px;
+  margin-bottom: 20px;
+}
+
+.heroStats { display: flex; gap: 26px; flex-wrap: wrap; }
+.heroStats .statNum { font-size: 24px; font-weight: 800; color: #ff9955; }
+.heroStats .statDesc { font-size: 9.5px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+/* the 4 summary boxes */
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.summaryBox {
+  background: #ffffff;
+  border: 1px solid #e6e4df;
+  border-left: 3px solid #ff6b00;
+  border-radius: 9px;
+  padding: 13px 15px;
+}
+.summaryBox.greenAccent { border-left-color: #138808; }
+.summaryBox.blueAccent  { border-left-color: #1758a0; }
+.summaryBox.redAccent   { border-left-color: #dc3d3d; }
+
+.summaryBox .bigVal  { font-size: 20px; font-weight: 800; }
+.summaryBox .smallLbl { font-size: 10.5px; color: #737170; margin-top: 3px; line-height: 1.4; }
+
+.whyBox {
+  background: #eaf5e8;
+  border-left: 3px solid #138808;
+  border-radius: 9px;
+  padding: 13px 17px;
+}
+.whyBox .whyHead { font-size: 10.5px; font-weight: 700; color: #138808; margin-bottom: 4px; }
+.whyBox p {
+  font-family: 'Vollkorn', serif;
+  font-size: 13px; color: #565655;
+  line-height: 1.7;
+}
+.whyBox p em { color: #138808; font-weight: 500; }
+
+/* ========================
+   PROBLEM PAGE
+   ======================== */
+
+/* 2-col grid that goes 1-col on narrow screens */
+.problemsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.problemCard {
+  background: #ffffff;
+  border: 1px solid #e4e2dd;
+  border-radius: 12px;
+  padding: 17px;
+  cursor: default;
+  transition: border-color 0.14s ease, transform 0.14s ease;
+}
+.problemCard:hover { border-color: #ff6b00; transform: translateY(-2px); }
+
+.problemCard .pEmoji { font-size: 23px; margin-bottom: 9px; display: block; }
+.problemCard .pTitle { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.problemCard .pDesc  { font-size: 12px; color: #646361; line-height: 1.6; }
+.problemCard .pStat  {
+  display: inline-block; margin-top: 8px;
+  background: #fff1e8; color: #dd5500;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+}
+
+/* ========================
+   CHARTS PAGE
+   ======================== */
+
+.chartTabRow { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+
+.chartTabBtn {
+  background: none;
+  border: 1px solid #d6d4cf;
+  border-radius: 6px;
+  padding: 5.5px 13px;
+  font-family: 'Syne', sans-serif;
+  font-size: 11.5px; font-weight: 500;
+  color: #888785;
+  cursor: pointer;
+  transition: all 0.13s;
+}
+.chartTabBtn:hover { background: #ece9e3; color: #333; }
+.chartTabBtn.activeTab { background: #ff6b00; color: #fff; border-color: #ff6b00; }
+
+.chartView { display: none; }
+.chartView.visibleChart { display: block; }
+
+.chartHeading { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.chartCaption { font-size: 11px; color: #898785; margin-bottom: 9px; }
+
+/* custom legend row - chartjs default legend looks ugly tbh */
+.colorLegend {
+  display: flex; flex-wrap: wrap;
+  gap: 11px; margin-bottom: 7px;
+  font-size: 11px; color: #797876;
+  align-items: center;
+}
+.colorLegend span { display: flex; align-items: center; gap: 5px; }
+.colorSwatch { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+/* ========================
+   STATE DATA PAGE
+   ======================== */
+
+.stateFilterRow {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  align-items: center; margin-bottom: 14px;
+  font-size: 11px; color: #888;
+}
+
+.statesContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(172px, 1fr));
+  gap: 9px;
+}
+
+.stateItem {
+  background: #fff;
+  border: 1px solid #e4e2dd;
+  border-radius: 9px;
+  padding: 11px 13px;
+  transition: border-color 0.13s;
+}
+.stateItem:hover { border-color: #ff6b00; }
+
+.stateItem .stateName  { font-size: 12px; font-weight: 700; margin-bottom: 7px; }
+.stateItem .barTrack   { background: #edebe6; border-radius: 3px; height: 5px; overflow: hidden; margin-bottom: 4px; }
+.stateItem .barFill    { height: 100%; border-radius: 3px; background: #ff6b00; }
+.stateItem .barFill.highAccess { background: #138808; }
+.stateItem .barFill.lowAccess  { background: #dc3d3d; }
+.stateItem .statePercent { font-size: 10.5px; color: #8a8886; }
+
+/* ========================
+   SOLUTIONS PAGE
+   ======================== */
+
+.solutionsList { display: flex; flex-direction: column; gap: 10px; }
+
+.solutionItem {
+  display: flex; gap: 13px; align-items: flex-start;
+  background: #fff; border: 1px solid #e4e2dd;
+  border-radius: 12px; padding: 15px;
+  transition: border-color 0.13s;
+}
+.solutionItem:hover { border-color: #ff6b00; }
+
+.solNumber {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #ff6b00; color: #fff;
+  font-weight: 800; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.solContent h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.solContent p  { font-size: 12px; color: #636260; line-height: 1.65; }
+.solContent .solLabel {
+  display: inline-block; margin-top: 7px;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px;
+  background: #eaf5e8; color: #138808;
+}
+.solContent .solLabel.orangeLabel { background: #fff1e8; color: #dd5500; }
+
+/* ========================
+   ABOUT PAGE
+   ======================== */
+
+.aboutHero {
+  background: #efede9;
+  border-radius: 15px;
+  padding: 22px;
+  display: flex; gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+
+.orgCard {
+  background: #17213d;
+  border-radius: 11px;
+  padding: 16px 18px;
+  color: #fff; text-align: center;
+  min-width: 128px; flex-shrink: 0;
+}
+.orgCard .gearIcon    { font-size: 27px; margin-bottom: 7px; display: block; }
+.orgCard .orgFullName { font-size: 13px; font-weight: 800; line-height: 1.3; }
+.orgCard .orgDivLine  { height: 1px; background: rgba(255,255,255,0.1); margin: 8px 0; }
+.orgCard .orgProgram  { font-size: 12px; color: #ff9955; font-weight: 700; }
+.orgCard .orgType     { font-size: 9.5px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+
+.myStory h2 { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+.myStory p  {
+  font-family: 'Vollkorn', serif;
+  font-size: 13.5px; color: #5e5d5c;
+  line-height: 1.75; margin-bottom: 9px;
+}
+.myStory p strong { color: #ff6b00; font-weight: 500; }
+
+.pullQuote {
+  border-left: 3px solid #ff6b00;
+  padding: 9px 13px; margin: 12px 0;
+  font-family: 'Vollkorn', serif; font-style: italic;
+  font-size: 13.5px; color: #5e5d5c; line-height: 1.75;
+  background: #fff8f3;
+  border-radius: 0 7px 7px 0;
+}
+
+.missionCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(183px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.missionCard {
+  background: #fff; border: 1px solid #e4e2dd;
+  border-radius: 9px; padding: 13px;
+}
+.missionCard .mIcon { font-size: 19px; margin-bottom: 7px; display: block; }
+.missionCard h4 { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+.missionCard p  { font-size: 11px; color: #737170; line-height: 1.5; }
+
+.pageFooter {
+  text-align: center;
+  padding: 26px 0 10px;
+}
+.pageFooter p  { font-size: 11px; color: #aaa; }
+.pageFooter .footBrand { color: #ff6b00; font-size: 13px; font-weight: 700; margin-top: 4px; display: block; }
+
+/* mobile */
+@media (max-width: 700px) {
+  .pageWrapper { grid-template-columns: 1fr; }
+  .sideNav {
+    position: static; height: auto;
+    flex-direction: row; flex-wrap: wrap;
+    padding: 8px; gap: 4px;
+  }
+  .projectBrand, .pagesLabel, .navFooter { display: none; }
+  .mainArea { padding: 14px; }
+  .heroSection h1 { font-size: 23px; }
+  .heroStats { gap: 18px; }
+}
 </style>
 </head>
-<section id="home">
+
 <body>
-<br>
-   <span style="padding: 8px; background-color: rgba(210, 105, 30, 0.358); border: 2px solid rgba(210, 105, 30, 0.5); border-radius: 18px; text-align: center; color: white;letter-spacing: 1.5px; margin: 620px;">INTERNSHIP PORTFOLIO</span>
-<br>
-<br>
-    <br>
-    <span style="text-align: center; color: aliceblue; font-size: 70px; margin: 530px;">Hamari_<em>Pahchan</em></span>
-    <br>
-    <br>
-    <span style="text-align: center; color: silver; font-size: 25px; margin: 600px;">Social Welfare NGO</span>
-    <br>
-    <br>
-    <hr style="margin-left: 600px; margin-right: 600px;">
-    <br>
-<div class="container">
-    <div class="card">
-        <span style="color: silver; margin-left: 290px;">Organisation</span>
+<div class="pageWrapper">
+
+  <!-- left sidebar nav -->
+  <aside class="sideNav">
+    <div class="projectBrand">
+      <span class="internTag">Internship Project</span>
+      <div class="projName">Digital Access<br>in India</div>
+      <span class="orgName">Hamari Pahchan · GadgetShala</span>
     </div>
-    <div class="card">
-        <span style="color: silver; margin-left: 310px;">Organisation</span>
+
+    <div class="pagesLabel">Pages</div>
+
+    <!-- onclick passes page id + the button itself so we can highlight it -->
+    <button class="navItem currentPage" onclick="openPage('pgHome', this)">
+      <span class="navIcon">🏠</span> Home
+    </button>
+    <button class="navItem" onclick="openPage('pgProblem', this)">
+      <span class="navIcon">⚠️</span> Problem
+    </button>
+    <button class="navItem" onclick="openPage('pgCharts', this)">
+      <span class="navIcon">📊</span> Charts
+    </button>
+    <button class="navItem" onclick="openPage('pgStates', this)">
+      <span class="navIcon">🗺️</span> State Data
+    </button>
+    <button class="navItem" onclick="openPage('pgSolutions', this)">
+      <span class="navIcon">💡</span> Solutions
+    </button>
+    <button class="navItem" onclick="openPage('pgAbout', this)">
+      <span class="navIcon">🌱</span> About
+    </button>
+
+    <div class="navFooter">
+      Hamari Pahchan<br>
+      <span style="color:rgba(255,136,51,0.4)">GadgetShala · 2024</span>
     </div>
-    <div class="card">
-        <span style="color: silver; margin-left: 320px;">Organisation</span>
+  </aside>
+
+  <!-- right content -->
+  <main class="mainArea">
+
+    <!-- HOME PAGE -->
+    <div class="dashPage activePage" id="pgHome">
+
+      <div class="heroSection">
+        <div class="heroProjLabel">Hamari Pahchan — GadgetShala</div>
+        <h1>Digital Access<br>in <span class="highlight">India</span></h1>
+        <p class="heroDesc">Mapping the gap between who's online and who's not — across 1.4 billion people.</p>
+        <div class="heroStats">
+          <div>
+            <div class="statNum">69%</div>
+            <div class="statDesc">Urban internet access</div>
+          </div>
+          <div>
+            <div class="statNum">31%</div>
+            <div class="statDesc">Rural internet access</div>
+          </div>
+          <div>
+            <div class="statNum">400M+</div>
+            <div class="statDesc">Still offline</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="summaryRow">
+        <div class="summaryBox">
+          <div class="bigVal">900M+</div>
+          <div class="smallLbl">Internet users (2024)</div>
+        </div>
+        <div class="summaryBox greenAccent">
+          <div class="bigVal">54%</div>
+          <div class="smallLbl">Overall penetration</div>
+        </div>
+        <div class="summaryBox blueAccent">
+          <div class="bigVal">1.18B</div>
+          <div class="smallLbl">Mobile subscriptions</div>
+        </div>
+        <div class="summaryBox redAccent">
+          <div class="bigVal">2nd</div>
+          <div class="smallLbl">Largest online population globally</div>
+        </div>
+      </div>
+
+      <div class="whyBox">
+        <div class="whyHead">Why it matters</div>
+        <p>The digital divide in India isn't just about internet access — it touches education, income, gender, and opportunity. Organisations like <em>Hamari Pahchan</em> are working to close this through programs like <em>GadgetShala</em>.</p>
+      </div>
     </div>
+
+    <!-- PROBLEM PAGE -->
+    <div class="dashPage" id="pgProblem">
+      <span class="pageTagline">The Challenge</span>
+      <h2 class="pgHeading">Why 400 Million Indians Are Still Offline</h2>
+      <p class="pgSubtext">It's not one problem. It's six problems stacked on each other.</p>
+
+      <div class="problemsGrid">
+        <div class="problemCard">
+          <span class="pEmoji">📡</span>
+          <div class="pTitle">No Signal</div>
+          <p class="pDesc">25,000+ villages have zero mobile coverage. Getting internet to remote areas costs more than companies can recover.</p>
+          <span class="pStat">25K+ villages unconnected</span>
+        </div>
+        <div class="problemCard">
+          <span class="pEmoji">💸</span>
+          <div class="pTitle">Can't Afford It</div>
+          <p class="pDesc">A basic smartphone is 2-4 months wages for many rural families. Even cheap data adds up when you earn ₹300 a day.</p>
+          <span class="pStat">Avg rural wage: ₹300/day</span>
+        </div>
+        <div class="problemCard">
+          <span class="pEmoji">📖</span>
+          <div class="pTitle">Don't Know How</div>
+          <p class="pDesc">First-time users get scammed, confused, or scared off. Without guidance a smartphone becomes useless or even dangerous.</p>
+          <span class="pStat">Only 38% digitally literate</span>
+        </div>
+        <div class="problemCard">
+          <span class="pEmoji">👩</span>
+          <div class="pTitle">Women Left Out</div>
+          <p class="pDesc">Women are 40% less likely to own a smartphone. Social pressure, safety concerns, and money all play a role.</p>
+          <span class="pStat">67% male vs 33% female users</span>
+        </div>
+        <div class="problemCard">
+          <span class="pEmoji">🗣️</span>
+          <div class="pTitle">Not in My Language</div>
+          <p class="pDesc">Most useful content is in English. 90% of India speaks something else first — so the internet feels foreign.</p>
+          <span class="pStat">22 official languages</span>
+        </div>
+        <div class="problemCard">
+          <span class="pEmoji">🔌</span>
+          <div class="pTitle">No Reliable Power</div>
+          <p class="pDesc">Even where internet exists, inconsistent electricity means you can't charge your device to actually use it.</p>
+          <span class="pStat">789M with unreliable power</span>
+        </div>
+      </div>
+
+      <div class="sepLine"></div>
+
+      <div class="chartHeading">Urban vs Rural gap (2019 to 2024)</div>
+      <div class="chartCaption">Both went up — but the divide stayed wide</div>
+      <div class="colorLegend">
+        <span><span class="colorSwatch" style="background:#ff6b00"></span>Urban</span>
+        <span><span class="colorSwatch" style="background:#138808"></span>Rural</span>
+      </div>
+      <div style="position:relative; height:235px;">
+        <canvas id="urbanRuralChart"></canvas>
+      </div>
+    </div>
+
+    <!-- CHARTS PAGE -->
+    <div class="dashPage" id="pgCharts">
+      <span class="pageTagline">Data</span>
+      <h2 class="pgHeading">Interactive Charts</h2>
+      <p class="pgSubtext">Click the tabs to explore different slices of India's digital divide.</p>
+
+      <div class="chartTabRow">
+        <button class="chartTabBtn activeTab" onclick="switchChartView('cvZone', this)">By Zone</button>
+        <button class="chartTabBtn" onclick="switchChartView('cvDevice', this)">Devices Used</button>
+        <button class="chartTabBtn" onclick="switchChartView('cvGender', this)">Gender Gap</button>
+        <button class="chartTabBtn" onclick="switchChartView('cvGrowth', this)">User Growth</button>
+      </div>
+
+      <div class="chartView visibleChart" id="cvZone">
+        <div class="chartHeading">Internet access: urban vs semi-urban vs rural</div>
+        <div class="chartCaption">2024 — the gap between city and village is still massive</div>
+        <div class="colorLegend">
+          <span><span class="colorSwatch" style="background:#ff6b00"></span>Urban 69%</span>
+          <span><span class="colorSwatch" style="background:#138808"></span>Semi-urban 49%</span>
+          <span><span class="colorSwatch" style="background:#1758a0"></span>Rural 31%</span>
+        </div>
+        <div style="position:relative; height:255px;"><canvas id="zoneChart"></canvas></div>
+      </div>
+
+      <div class="chartView" id="cvDevice">
+        <div class="chartHeading">How people in India access internet</div>
+        <div class="chartCaption">Smartphones dominate — India skipped the desktop era entirely</div>
+        <div class="colorLegend">
+          <span><span class="colorSwatch" style="background:#ff6b00"></span>Smartphone 74%</span>
+          <span><span class="colorSwatch" style="background:#138808"></span>Feature phone 15%</span>
+          <span><span class="colorSwatch" style="background:#1758a0"></span>Laptop/PC 9%</span>
+          <span><span class="colorSwatch" style="background:#bb5025"></span>Tablet 2%</span>
+        </div>
+        <div style="position:relative; height:255px;"><canvas id="deviceChart"></canvas></div>
+      </div>
+
+      <div class="chartView" id="cvGender">
+        <div class="chartHeading">Male vs female internet access by state</div>
+        <div class="chartCaption">Women are consistently behind — the gap is worst in Bihar and UP</div>
+        <div class="colorLegend">
+          <span><span class="colorSwatch" style="background:#1758a0"></span>Male</span>
+          <span><span class="colorSwatch" style="background:#c24e6e"></span>Female</span>
+        </div>
+        <div style="position:relative; height:310px;"><canvas id="genderChart"></canvas></div>
+      </div>
+
+      <div class="chartView" id="cvGrowth">
+        <div class="chartHeading">India's internet users 2015–2024</div>
+        <div class="chartCaption">In millions — growth has been extraordinary but uneven</div>
+        <div style="position:relative; height:255px;"><canvas id="growthChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- STATES PAGE -->
+    <div class="dashPage" id="pgStates">
+      <span class="pageTagline">State Data</span>
+      <h2 class="pgHeading">Where Is India Connected?</h2>
+      <p class="pgSubtext">Access varies hugely depending on which state you're in. Green = doing well. Red = needs urgent work.</p>
+
+      <div class="stateFilterRow">
+        <span>Show:</span>
+        <button class="chartTabBtn activeTab" onclick="applyStateFilter('all', this)" style="padding:4px 10px; font-size:10.5px;">All</button>
+        <button class="chartTabBtn" onclick="applyStateFilter('high', this)" style="padding:4px 10px; font-size:10.5px;">High (&gt;60%)</button>
+        <button class="chartTabBtn" onclick="applyStateFilter('mid', this)" style="padding:4px 10px; font-size:10.5px;">Mid (40–60%)</button>
+        <button class="chartTabBtn" onclick="applyStateFilter('low', this)" style="padding:4px 10px; font-size:10.5px;">Low (&lt;40%)</button>
+      </div>
+
+      <div class="statesContainer" id="statesContainer"></div>
+    </div>
+
+    <!-- SOLUTIONS PAGE -->
+    <div class="dashPage" id="pgSolutions">
+      <span class="pageTagline">What Can Help</span>
+      <h2 class="pgHeading">Bridging the Gap</h2>
+      <p class="pgSubtext">The approaches that actually move the needle — some already happening, some we need more of.</p>
+
+      <div class="solutionsList">
+        <div class="solutionItem">
+          <div class="solNumber">1</div>
+          <div class="solContent">
+            <h3>Community Gadget Centers — the GadgetShala way</h3>
+            <p>Not everyone can buy a phone. But if there's a shared space in the community with devices, guidance, and a safe environment — that changes everything. That's exactly what GadgetShala does and it works.</p>
+            <span class="solLabel orangeLabel">GadgetShala Initiative</span>
+          </div>
+        </div>
+        <div class="solutionItem">
+          <div class="solNumber">2</div>
+          <div class="solContent">
+            <h3>Content in local languages</h3>
+            <p>When the internet speaks your language it becomes useful. Right now most of it doesn't. Hindi, Tamil, Telugu, Bengali — reaching people in their own language is one of the fastest ways to bring them in.</p>
+            <span class="solLabel">Language Access</span>
+          </div>
+        </div>
+        <div class="solutionItem">
+          <div class="solNumber">3</div>
+          <div class="solContent">
+            <h3>Putting women first</h3>
+            <p>When women get digital access, whole families benefit. Programs designed specifically for women — in safe and respectful spaces — have an outsized ripple effect on education and household income.</p>
+            <span class="solLabel">Gender Equity</span>
+          </div>
+        </div>
+        <div class="solutionItem">
+          <div class="solNumber">4</div>
+          <div class="solContent">
+            <h3>Government Wi-Fi rollout (PM-WANI)</h3>
+            <p>India's plan to put public hotspots in post offices, train stations, and village service centers. The infrastructure exists — it just needs to be pushed faster and further.</p>
+            <span class="solLabel">Policy</span>
+          </div>
+        </div>
+        <div class="solutionItem">
+          <div class="solNumber">5</div>
+          <div class="solContent">
+            <h3>Refurbished phones and laptops</h3>
+            <p>Collect donated devices, fix them, give them to students or low-income families. Tackles cost problem. Reduces e-waste. Works right now without waiting for prices to drop.</p>
+            <span class="solLabel">Circular Economy</span>
+          </div>
+        </div>
+        <div class="solutionItem">
+          <div class="solNumber">6</div>
+          <div class="solContent">
+            <h3>Teaching people to stay safe online</h3>
+            <p>Scams and fake news push new users away from the internet entirely. Cyber safety education builds the trust needed to actually participate — not just connect and disconnect.</p>
+            <span class="solLabel">Digital Safety</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div class="dashPage" id="pgAbout">
+      <span class="pageTagline">My Story</span>
+      <h2 class="pgHeading">Why I Built This</h2>
+      <p class="pgSubtext">My internship at Hamari Pahchan and how GadgetShala became the inspiration for this whole project.</p>
+
+      <div class="aboutHero">
+        <div class="orgCard">
+          <span class="gearIcon">⚙️</span>
+          <div class="orgFullName">Hamari<br>Pahchan</div>
+          <div class="orgDivLine"></div>
+          <div class="orgProgram">GadgetShala</div>
+          <div class="orgType">Digital Inclusion Initiative</div>
+        </div>
+        <div class="myStory">
+          <h2>My Internship Inspiration</h2>
+          <p>I joined <strong>Hamari Pahchan</strong> for my internship and got put on the <strong>GadgetShala</strong> initiative. Honestly I didn't fully get what it meant at first — but the more I got into it, the more it stuck with me.</p>
+          <p>GadgetShala is basically a shared device center for communities that can't afford their own gadgets. Sounds simple. But for someone using a smartphone for the first time, it genuinely changes what's possible for them.</p>
+          <div class="pullQuote">
+            "When a woman in a rural community sends her first message online, or checks a government scheme she qualifies for — that's not just technology. That's access to a life that was always hers."
+          </div>
+          <p>I made this dashboard to put real numbers behind what I was seeing on the ground. So people could understand the scale of the problem — not just hear about it.</p>
+        </div>
+      </div>
+
+      <div class="missionCards">
+        <div class="missionCard">
+          <span class="mIcon">🎯</span>
+          <h4>The Mission</h4>
+          <p>No Indian should be left out of the digital world just because of where they were born or what they earn.</p>
+        </div>
+        <div class="missionCard">
+          <span class="mIcon">🏫</span>
+          <h4>GadgetShala</h4>
+          <p>Shared device centers with real people to guide first-time users — not just a computer dropped in a room.</p>
+        </div>
+        <div class="missionCard">
+          <span class="mIcon">📊</span>
+          <h4>This Dashboard</h4>
+          <p>Built during my internship to make the data visual. Numbers without context don't actually move people.</p>
+        </div>
+        <div class="missionCard">
+          <span class="mIcon">🌱</span>
+          <h4>The Hope</h4>
+          <p>Connectivity = opportunity. Better health info, better jobs, stronger communities. Every connection matters.</p>
+        </div>
+      </div>
+
+      <div class="pageFooter">
+        <p>Built with real data and genuine care.</p>
+        <span class="footBrand">Hamari Pahchan — GadgetShala Initiative</span>
+      </div>
+    </div>
+
+  </main>
 </div>
-<div class="container">
-    <div class="card">
-        <span style="color: silver; margin-left: 290px;">Organisation</span>
-    </div>
-    <div class="card">
-        <span style="color: silver; margin-left: 310px;">Organisation</span>
-    </div>
-    <div class="card">
-        <span style="color: silver; margin-left: 320px;">Organisation</span>
-    </div>
-</div>
+
+<script>
+// state-level data pulled from TRAI + IAMAI 2024 reports
+// tier: high = above 60%, mid = 40-60%, low = below 40%
+var stateConnectivityData = [
+  { stateName:'Delhi',            pct:79, tier:'high' },
+  { stateName:'Goa',              pct:74, tier:'high' },
+  { stateName:'Kerala',           pct:72, tier:'high' },
+  { stateName:'Himachal Pradesh', pct:68, tier:'high' },
+  { stateName:'Maharashtra',      pct:62, tier:'high' },
+  { stateName:'Uttarakhand',      pct:61, tier:'high' },
+  { stateName:'Karnataka',        pct:58, tier:'mid'  },
+  { stateName:'Tamil Nadu',       pct:57, tier:'mid'  },
+  { stateName:'Telangana',        pct:55, tier:'mid'  },
+  { stateName:'Punjab',           pct:54, tier:'mid'  },
+  { stateName:'Gujarat',          pct:53, tier:'mid'  },
+  { stateName:'Andhra Pradesh',   pct:50, tier:'mid'  },
+  { stateName:'Haryana',          pct:48, tier:'mid'  },
+  { stateName:'West Bengal',      pct:47, tier:'mid'  },
+  { stateName:'Rajasthan',        pct:43, tier:'mid'  },
+  { stateName:'Madhya Pradesh',   pct:39, tier:'low'  },
+  { stateName:'Assam',            pct:38, tier:'low'  },
+  { stateName:'Uttar Pradesh',    pct:36, tier:'low'  },
+  { stateName:'Jharkhand',        pct:34, tier:'low'  },
+  { stateName:'Chhattisgarh',     pct:33, tier:'low'  },
+  { stateName:'Odisha',           pct:37, tier:'low'  },
+  { stateName:'Bihar',            pct:31, tier:'low'  }
+];
+
+// track which charts we've already rendered so we don't redraw them
+var chartsAlreadyMade = {};
+
+// page switching
+function openPage(targetPageId, clickedBtn) {
+  document.querySelectorAll('.dashPage').forEach(function(pg) {
+    pg.classList.remove('activePage');
+  });
+  document.querySelectorAll('.navItem').forEach(function(nb) {
+    nb.classList.remove('currentPage');
+  });
+
+  document.getElementById(targetPageId).classList.add('activePage');
+  clickedBtn.classList.add('currentPage');
+
+  if (targetPageId === 'pgProblem') setTimeout(makeUrbanRuralChart, 55);
+  if (targetPageId === 'pgCharts')  setTimeout(makeActiveChart, 55);
+  if (targetPageId === 'pgStates')  buildStateGrid('all');
+}
+
+// chart tab switching
+function switchChartView(viewId, clickedTab) {
+  document.querySelectorAll('.chartView').forEach(function(cv) {
+    cv.classList.remove('visibleChart');
+  });
+  document.querySelectorAll('.chartTabBtn').forEach(function(tb) {
+    tb.classList.remove('activeTab');
+  });
+  document.getElementById(viewId).classList.add('visibleChart');
+  clickedTab.classList.add('activeTab');
+  setTimeout(makeActiveChart, 55);
+}
+
+// state filter
+function applyStateFilter(tierFilter, clickedBtn) {
+  document.querySelectorAll('.stateFilterRow .chartTabBtn').forEach(function(b) {
+    b.classList.remove('activeTab');
+  });
+  clickedBtn.classList.add('activeTab');
+  buildStateGrid(tierFilter);
+}
+
+function buildStateGrid(tierFilter) {
+  var container = document.getElementById('statesContainer');
+  container.innerHTML = '';
+
+  var filtered = stateConnectivityData.filter(function(s) {
+    return tierFilter === 'all' || s.tier === tierFilter;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<p style="font-size:13px;color:#999;">No states in this range.</p>';
+    return;
+  }
+
+  filtered.forEach(function(stateInfo) {
+    var barClass = '';
+    if (stateInfo.tier === 'high') barClass = 'highAccess';
+    if (stateInfo.tier === 'low')  barClass = 'lowAccess';
+
+    var card = document.createElement('div');
+    card.className = 'stateItem';
+    card.innerHTML =
+      '<div class="stateName">' + stateInfo.stateName + '</div>' +
+      '<div class="barTrack"><div class="barFill ' + barClass + '" style="width:' + stateInfo.pct + '%"></div></div>' +
+      '<div class="statePercent">' + stateInfo.pct + '% connected</div>';
+    container.appendChild(card);
+  });
+}
+
+function makeUrbanRuralChart() {
+  if (chartsAlreadyMade.urbanRural) return;
+  chartsAlreadyMade.urbanRural = true;
+
+  new Chart(document.getElementById('urbanRuralChart'), {
+    type: 'line',
+    data: {
+      labels: ['2019','2020','2021','2022','2023','2024'],
+      datasets: [
+        {
+          label: 'Urban',
+          data: [55, 58, 61, 64, 67, 69],
+          borderColor: '#ff6b00',
+          backgroundColor: 'rgba(255,107,0,0.07)',
+          fill: true, tension: 0.4, pointRadius: 4
+        },
+        {
+          label: 'Rural',
+          data: [18, 21, 24, 27, 29, 31],
+          borderColor: '#138808',
+          backgroundColor: 'rgba(19,136,8,0.07)',
+          fill: true, tension: 0.4, pointRadius: 4,
+          borderDash: [5, 3]
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { min:0, max:85, ticks: { callback: function(v){ return v+'%'; } } } }
+    }
+  });
+}
+
+function makeActiveChart() {
+  var visibleView = document.querySelector('.chartView.visibleChart');
+  if (!visibleView) return;
+
+  var viewId = visibleView.id;
+
+  if (viewId === 'cvZone' && !chartsAlreadyMade.zoneChart) {
+    chartsAlreadyMade.zoneChart = true;
+    new Chart(document.getElementById('zoneChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Urban', 'Semi-urban', 'Rural'],
+        datasets: [{
+          data: [69, 49, 31],
+          backgroundColor: ['#ff6b00', '#138808', '#1758a0'],
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { max:100, ticks: { callback: function(v){ return v+'%'; } } } }
+      }
+    });
+  }
+
+  if (viewId === 'cvDevice' && !chartsAlreadyMade.deviceChart) {
+    chartsAlreadyMade.deviceChart = true;
+    new Chart(document.getElementById('deviceChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Smartphone','Feature phone','Laptop/PC','Tablet'],
+        datasets: [{
+          data: [74, 15, 9, 2],
+          backgroundColor: ['#ff6b00','#138808','#1758a0','#bb5025'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        cutout: '57%'
+      }
+    });
+  }
+
+  if (viewId === 'cvGender' && !chartsAlreadyMade.genderChart) {
+    chartsAlreadyMade.genderChart = true;
+    new Chart(document.getElementById('genderChart'), {
+      type: 'bar',
+      indexAxis: 'y',
+      data: {
+        labels: ['Kerala','Delhi','Maharashtra','UP','Bihar','Rajasthan'],
+        datasets: [
+          { label:'Male',   data:[78,84,68,44,38,50], backgroundColor:'#1758a0', borderRadius:3 },
+          { label:'Female', data:[66,72,54,26,22,30], backgroundColor:'#c24e6e', borderRadius:3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { max:100, ticks: { callback: function(v){ return v+'%'; } } } }
+      }
+    });
+  }
+
+  if (viewId === 'cvGrowth' && !chartsAlreadyMade.growthChart) {
+    chartsAlreadyMade.growthChart = true;
+    new Chart(document.getElementById('growthChart'), {
+      type: 'line',
+      data: {
+        labels: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+        datasets: [{
+          label: 'Users (M)',
+          data: [350,420,481,560,627,700,759,820,870,900],
+          borderColor: '#ff6b00',
+          backgroundColor: 'rgba(255,107,0,0.07)',
+          fill: true, tension: 0.4,
+          pointRadius: 4, pointBackgroundColor: '#ff6b00'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { ticks: { callback: function(v){ return v+'M'; } } } }
+      }
+    });
+  }
+}
+
+// run state grid right away so it's ready when user lands on that page
+buildStateGrid('all');
+</script>
 </body>
-</section>
-<section id="about">
-<p>test</p>
-</section>
 </html>
