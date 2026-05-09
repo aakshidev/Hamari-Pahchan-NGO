@@ -85,14 +85,3 @@ A future where no child is deprived of education due to lack of resources, and e
 
 ---
 
-## 💡 Acknowledgements
-
-Special thanks to all volunteers, donors, and partners who contribute to making education and opportunity accessible to everyone.
-
-
-
-* your *internship report*
-* your *case study (Gadgetshala focus)*
-* or a *GitHub project version with badges and design*
-
-Just tell me 👍
